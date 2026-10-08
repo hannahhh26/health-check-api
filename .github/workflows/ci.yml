@@ -55,3 +55,35 @@ jobs:
 
       - name: Validate configuration
         run: terraform validate
+
+  publish-image:
+    name: Build and publish Docker image
+    needs: [api-tests, terraform-checks]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      IMAGE_NAME: ghcr.io/hannahhh26/health-check-api
+      IMAGE_TAG: sha-${{ github.sha }}
+      GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Log in to GitHub Container Registry
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --label "org.opencontainers.image.source=https://github.com/hannahhh26/health-check-api" \
+            --tag "$IMAGE_NAME:$IMAGE_TAG" \
+            .
+
+      - name: Publish Docker image
+        run: docker push "$IMAGE_NAME:$IMAGE_TAG"
