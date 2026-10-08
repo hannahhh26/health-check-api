@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  repository: health-check-api
-  tag: "1.1.0"
+  repository: ghcr.io/hannahhh26/health-check-api
+  tag: "sha-4ae6af43bd6d88b6a7b296010fa98733a209530d"
   pullPolicy: IfNotPresent
 
 service:
