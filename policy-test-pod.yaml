@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: policy-test
+  namespace: policy-lab
+spec:
+  containers:
+    - name: health-check-api
+      image: health-check-api:1.1.0
+      imagePullPolicy: Never
+      resources:
+        limits:
+          memory: "128Mi"
+      ports:
+        - containerPort: 8000

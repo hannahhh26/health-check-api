@@ -1,0 +1,23 @@
+apiVersion: policies.kyverno.io/v1
+kind: NamespacedValidatingPolicy
+metadata:
+  name: require-memory-limit
+  namespace: policy-lab
+spec:
+  validationActions:
+    - Deny
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["pods"]
+  validations:
+    - expression: >-
+        object.spec.containers.all(container,
+          has(container.resources) &&
+          has(container.resources.limits) &&
+          'memory' in container.resources.limits
+        )
+      message: "Every container must have a memory limit."
+      
